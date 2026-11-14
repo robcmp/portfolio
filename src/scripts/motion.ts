@@ -25,6 +25,26 @@ try {
 
 /** Side effects that must follow the switch (cancel rAF loops, paint static states). */
 const followers = new Set<() => void>();
+let events = new AbortController();
+const cleanups: Array<() => void> = [];
+const timeouts = new Set<ReturnType<typeof setTimeout>>();
+
+/** Page-local timers must not keep detached translated content alive. */
+function later(callback: () => void, delay: number) {
+  const id = setTimeout(() => {
+    timeouts.delete(id);
+    callback();
+  }, delay);
+  timeouts.add(id);
+}
+
+export function disposeMotion() {
+  events.abort();
+  cleanups.splice(0).forEach((cleanup) => cleanup());
+  timeouts.forEach((id) => clearTimeout(id));
+  timeouts.clear();
+  followers.clear();
+}
 
 function revealAll() {
   document.querySelectorAll('[data-reveal]').forEach((el) => el.classList.add('is-in'));
@@ -56,20 +76,27 @@ function setMotion(next: boolean) {
 
 /** Run `frame` on rAF only while `el` is on screen, the tab is visible and motion is on. */
 function whileVisible(el: Element, frame: (t: number) => void) {
+  const signal = events.signal;
   let visible = false;
   let raf = 0;
   const loop = (t: number) => {
+    if (signal.aborted) return;
     frame(t);
     raf = requestAnimationFrame(loop);
   };
   const sync = () => {
-    const run = visible && !document.hidden && motion;
+    const run = !signal.aborted && visible && !document.hidden && motion;
     if (run && !raf) raf = requestAnimationFrame(loop);
     if (!run && raf) { cancelAnimationFrame(raf); raf = 0; }
   };
-  new IntersectionObserver(([e]) => { visible = e.isIntersecting; sync(); }).observe(el);
-  document.addEventListener('visibilitychange', sync);
+  const observer = new IntersectionObserver(([e]) => { visible = e.isIntersecting; sync(); });
+  observer.observe(el);
+  document.addEventListener('visibilitychange', sync, { signal: events.signal });
   followers.add(sync);
+  cleanups.push(() => {
+    observer.disconnect();
+    cancelAnimationFrame(raf);
+  });
 }
 
 /* ── rotating ASCII torus (z-buffered donut projection) ── */
@@ -116,7 +143,7 @@ function torus() {
     window.addEventListener('pointermove', (e) => {
       mx = (e.clientX / innerWidth - 0.5) * 0.04;
       my = (e.clientY / innerHeight - 0.5) * 0.04;
-    }, { passive: true });
+    }, { passive: true, signal: events.signal });
   }
 
   // Cheaper target on small screens: 30fps desktop, ~20fps mobile.
@@ -150,7 +177,7 @@ function scramble(el: HTMLElement) {
       s += i < revealed || ch === ' ' ? ch : GLYPHS[(Math.random() * GLYPHS.length) | 0];
     }
     el.textContent = s;
-    if (frame++ < total) setTimeout(tick, 38);
+    if (frame++ < total) later(tick, 38);
     else el.textContent = final;
   };
   if (!el.dataset.realText) el.dataset.realText = final;
@@ -158,7 +185,9 @@ function scramble(el: HTMLElement) {
 }
 
 function reveals() {
+  const signal = events.signal;
   const io = new IntersectionObserver((entries) => {
+    if (signal.aborted) return;
     for (const e of entries) {
       if (!e.isIntersecting) continue;
       const el = e.target as HTMLElement;
@@ -168,6 +197,7 @@ function reveals() {
     }
   }, { rootMargin: '0px 0px -6% 0px', threshold: 0.1 });
   document.querySelectorAll('[data-reveal], [data-scramble]').forEach((el) => io.observe(el));
+  cleanups.push(() => io.disconnect());
 }
 
 /* ── self-typing terminal ── */
@@ -193,19 +223,19 @@ function terminal() {
     if (!line) return;
     line.classList.add('shown');
     const cmdEl = line.querySelector<HTMLElement>('[data-cmd-text]');
-    if (!cmdEl) { setTimeout(next, 140); return; }
+    if (!cmdEl) { later(next, 140); return; }
     const full = line.dataset.cmd ?? '';
     let c = 0;
     cmdEl.textContent = '';
     const type = () => {
       if (stopped) return;
       cmdEl.textContent = full.slice(0, ++c);
-      if (c < full.length) setTimeout(type, 45 + Math.random() * 60);
-      else setTimeout(next, 320);
+      if (c < full.length) later(type, 45 + Math.random() * 60);
+      else later(next, 320);
     };
-    setTimeout(type, 260);
+    later(type, 260);
   };
-  setTimeout(next, 600);
+  later(next, 600);
 }
 
 /* ── glyph rain behind the contact section ── */
@@ -225,7 +255,9 @@ function rain() {
     drops = Array.from({ length: cols }, () => Math.random() * -60);
   };
   resize();
-  new ResizeObserver(resize).observe(canvas);
+  const observer = new ResizeObserver(resize);
+  observer.observe(canvas);
+  cleanups.push(() => observer.disconnect());
   const draw = () => {
     ctx.fillStyle = 'rgba(7, 8, 7, 0.12)';
     ctx.fillRect(0, 0, canvas.clientWidth, canvas.clientHeight);
@@ -251,8 +283,8 @@ function spotlights() {
       const r = el.getBoundingClientRect();
       el.style.setProperty('--mx', `${e.clientX - r.left}px`);
       el.style.setProperty('--my', `${e.clientY - r.top}px`);
-    });
-    el.addEventListener('pointerleave', () => { el.style.removeProperty('--mx'); el.style.removeProperty('--my'); });
+    }, { signal: events.signal });
+    el.addEventListener('pointerleave', () => { el.style.removeProperty('--mx'); el.style.removeProperty('--my'); }, { signal: events.signal });
   });
 }
 
@@ -260,7 +292,8 @@ function clocks() {
   const fmt = new Intl.DateTimeFormat('es-CL', { hour: '2-digit', minute: '2-digit', timeZone: 'America/Santiago', hour12: false });
   const tick = () => document.querySelectorAll('[data-clock]').forEach((c) => (c.textContent = fmt.format(new Date())));
   tick();
-  setInterval(tick, 15_000);
+  const interval = setInterval(tick, 15_000);
+  cleanups.push(() => clearInterval(interval));
 }
 
 function copyEmail() {
@@ -269,18 +302,21 @@ function copyEmail() {
     btn.addEventListener('click', async () => {
       try {
         await navigator.clipboard.writeText(btn.dataset.copy ?? '');
+        if (!btn.isConnected) return;
         btn.textContent = btn.dataset.copied ?? '✓';
-        setTimeout(() => (btn.textContent = original), 1600);
+        later(() => { btn.textContent = original; }, 1600);
       } catch {
         // Clipboard unavailable: select the visible address so it can be copied by hand.
         const email = btn.parentElement?.querySelector('[data-email]');
         if (email) window.getSelection()?.selectAllChildren(email);
       }
-    });
+    }, { signal: events.signal });
   });
 }
 
 export function initMotion() {
+  disposeMotion();
+  events = new AbortController();
   clocks();
   copyEmail();
   torus();
@@ -290,7 +326,7 @@ export function initMotion() {
   if (finePointer) spotlights();
 
   document.querySelectorAll('[data-motion-toggle]').forEach((btn) => {
-    btn.addEventListener('click', () => setMotion(!motion));
+    btn.addEventListener('click', () => setMotion(!motion), { signal: events.signal });
   });
 
   // Follow OS-level changes only while the visitor has not chosen explicitly.
@@ -301,7 +337,7 @@ export function initMotion() {
     motion = !e.matches;
     paintSwitch();
     if (!motion) revealAll();
-  });
+  }, { signal: events.signal });
 
   paintSwitch();
   if (!motion) revealAll();

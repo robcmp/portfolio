@@ -262,6 +262,8 @@ const year = new Date().getFullYear();
 </footer>
 
 <script>
-  import { initMotion } from '../scripts/motion';
-  initMotion();
+  import { initMotion, disposeMotion } from '../scripts/motion';
+
+  document.addEventListener('astro:before-swap', disposeMotion);
+  document.addEventListener('astro:page-load', initMotion);
 </script>

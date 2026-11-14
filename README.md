@@ -14,6 +14,13 @@ npm run build      # astro check + static build to dist/
 ```
 
 All copy lives in `src/i18n/content.ts` (one object per language).
+The ES/EN links use Astro client-side navigation to update the language and URL
+without a full page reload. Direct links still work without JavaScript. Motion
+controls retain their preference, and animation resources are cleaned up on navigation.
+
+Run the motion lifecycle regression check with `node --test tests/*.test.mjs`.
+For browser checks against a running build, use an external Playwright installation:
+`PLAYWRIGHT=/path/to/playwright/index.mjs node tests/browser-language-navigation.mjs http://localhost:4322/`.
 
 ## Deploy (rm.byteforus.com)
 
