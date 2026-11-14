@@ -147,6 +147,25 @@ const year = new Date().getFullYear();
             <ul class="mt-auto flex flex-wrap gap-1.5 border-t border-rule pt-5 font-mono text-[11px] text-dim">
               {p.stack.map((s) => <li class="border border-rule px-2 py-1 transition-colors group-hover:border-neon-dim">{s}</li>)}
             </ul>
+            {p.url ? (
+            <a
+              href={p.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="group/link mt-5 flex min-h-11 items-center justify-between gap-4 border border-rule px-4 py-3 font-mono text-[13px] text-fg transition-colors duration-200 hover:border-neon hover:bg-neon hover:text-void focus-visible:border-neon"
+            >
+              <span class="truncate">
+                <span class="text-neon transition-colors group-hover/link:text-void" aria-hidden="true">❯</span>{' '}
+                {d.work.open} <span class="text-dim transition-colors group-hover/link:text-void">{p.url.replace('https://', '')}</span>
+                <span class="sr-only"> — {p.title} ({d.work.newTab})</span>
+              </span>
+              <span class="text-base leading-none transition-transform duration-200 group-hover/link:-translate-y-0.5 group-hover/link:translate-x-0.5" aria-hidden="true">↗</span>
+            </a>
+            ) : (
+            <p class="mt-5 flex min-h-11 items-center gap-2 border border-dashed border-rule px-4 py-3 font-mono text-[13px] text-faint">
+              <span aria-hidden="true">❯</span> {d.work.private}
+            </p>
+            )}
           </article>
         </li>
       ))}

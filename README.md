@@ -22,6 +22,21 @@ Run the motion lifecycle regression check with `node --test tests/*.test.mjs`.
 For browser checks against a running build, use an external Playwright installation:
 `PLAYWRIGHT=/path/to/playwright/index.mjs node tests/browser-language-navigation.mjs http://localhost:4322/`.
 
+## Social share cards (Open Graph)
+
+`public/og-es.png` and `public/og-en.png` (1200x630) are the link previews for LinkedIn,
+WhatsApp, Slack and X. They are rendered from `og/render.cjs` (headline taken from the
+hero copy, fonts inlined, fails if any text overlaps or leaves the safe area). Regenerate
+after changing the hero copy:
+
+```bash
+PLAYWRIGHT=<path to a playwright module> CHROME=<chromium binary> node og/render.cjs
+```
+
+Playwright is not a dependency of this project; point `PLAYWRIGHT` at any local install.
+After deploying, refresh cached previews with the
+[LinkedIn Post Inspector](https://www.linkedin.com/post-inspector/).
+
 ## Deploy (rm.byteforus.com)
 
 Every push to `main` runs `.github/workflows/deploy.yml`: it builds with

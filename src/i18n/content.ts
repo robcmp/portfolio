@@ -22,12 +22,14 @@ export type Project = {
   summary: string;
   log: string[];
   stack: string[];
+  /** Live app URL; omit for private/personal projects. */
+  url?: string;
 };
 
 export type Commit = { hash: string; ref: string; period: string; role: string; company: string; msg: string };
 
 type Dict = {
-  meta: { title: string; description: string };
+  meta: { title: string; description: string; ogAlt: string };
   nav: { work: string; stack: string; log: string; contact: string; label: string };
   ui: { motion: string; motionOn: string; motionOff: string };
   hero: {
@@ -41,7 +43,7 @@ type Dict = {
   };
   terminal: { cmd: string; out: string[] }[];
   metrics: { k: string; v: string }[];
-  work: { eyebrow: string; title: string; note: string; status: string; projects: Project[] };
+  work: { eyebrow: string; title: string; note: string; status: string; open: string; newTab: string; private: string; projects: Project[] };
   stack: { eyebrow: string; title: string; groups: { dir: string; items: string[] }[] };
   log: { eyebrow: string; title: string; commits: Commit[]; edu: string[] };
   contact: { eyebrow: string; title: string; sub: string; copy: string; copied: string; available: string };
@@ -49,9 +51,9 @@ type Dict = {
 };
 
 const projectBase = {
-  budget: { slug: 'budget-for-both', title: 'Budget For Both', stack: ['vue-3', 'nestjs', 'prisma', 'postgresql', 'otel'] },
-  wih: { slug: 'what-i-have', title: 'What I Have', stack: ['react-19', 'nestjs-11', 'mcp', 'tailwind-v4', 'docker'] },
-  health: { slug: 'family-health', title: 'Family Health', stack: ['react-19', 'express', 'postgresql', 'tesseract.js', 'otel'] },
+  budget: { slug: 'budget-for-both', title: 'Budget For Both', url: 'https://budget.byteforus.com', stack: ['vue-3', 'nestjs', 'prisma', 'postgresql', 'otel'] },
+  wih: { slug: 'what-i-have', title: 'What I Have', url: 'https://whatihave.byteforus.com', stack: ['react-19', 'nestjs-11', 'mcp', 'tailwind-v4', 'docker'] },
+  health: { slug: 'family-health', title: 'Family Health', url: 'https://familyhealth.byteforus.com', stack: ['react-19', 'express', 'postgresql', 'tesseract.js', 'otel'] },
   flow: { slug: 'dailyflow', title: 'DailyFlow', stack: ['nestjs', 'react', 'playwright', 'bullmq', 'redis'] },
 };
 
@@ -69,7 +71,8 @@ export const t: Record<Lang, Dict> = {
     meta: {
       title: 'Roberto Mendoza — Frontend & Full Stack Engineer',
       description:
-        'Ingeniero de software en Santiago de Chile. 6 años construyendo plataformas web, design systems, APIs y productos con IA aplicada.',
+        'Ingeniero de software en Santiago de Chile. 6 años construyendo plataformas web y APIs junto a Design Systems, con IA aplicada al desarrollo.',
+      ogAlt: 'Tarjeta: Menos fricción. Más producto. Roberto Mendoza, Frontend & Full Stack Engineer, rm.byteforus.com',
     },
     nav: { work: 'proyectos', stack: 'stack', log: 'trayectoria', contact: 'contacto', label: 'Navegación principal' },
     ui: { motion: 'motion', motionOn: 'on', motionOff: 'off' },
@@ -98,6 +101,9 @@ export const t: Record<Lang, Dict> = {
       title: 'Procesos en ejecución',
       note: 'Productos propios, diseñados, construidos y desplegados de punta a punta en mi propio VPS.',
       status: 'en línea',
+      open: 'abrir',
+      newTab: 'se abre en una pestaña nueva',
+      private: 'privado · uso personal',
       projects: [
         {
           ...projectBase.budget,
@@ -163,7 +169,8 @@ export const t: Record<Lang, Dict> = {
     meta: {
       title: 'Roberto Mendoza — Frontend & Full Stack Engineer',
       description:
-        'Software engineer based in Santiago, Chile. 6 years building web platforms, design systems, APIs and applied-AI products.',
+        'Software engineer based in Santiago, Chile. 6 years building web platforms and APIs alongside Design Systems, with AI applied to development.',
+      ogAlt: 'Share card: Less friction. More product. Roberto Mendoza, Frontend & Full Stack Engineer, rm.byteforus.com',
     },
     nav: { work: 'work', stack: 'stack', log: 'career', contact: 'contact', label: 'Main navigation' },
     ui: { motion: 'motion', motionOn: 'on', motionOff: 'off' },
@@ -192,6 +199,9 @@ export const t: Record<Lang, Dict> = {
       title: 'Running processes',
       note: 'Own products, designed, built and deployed end to end on my own VPS.',
       status: 'online',
+      open: 'open',
+      newTab: 'opens in a new tab',
+      private: 'private · personal use',
       projects: [
         {
           ...projectBase.budget,
