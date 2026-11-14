@@ -27,7 +27,7 @@ export type Project = {
 export type Commit = { hash: string; ref: string; period: string; role: string; company: string; msg: string };
 
 type Dict = {
-  meta: { title: string; description: string };
+  meta: { title: string; description: string; ogAlt: string };
   nav: { work: string; stack: string; log: string; contact: string; label: string };
   ui: { motion: string; motionOn: string; motionOff: string };
   hero: {
@@ -70,6 +70,7 @@ export const t: Record<Lang, Dict> = {
       title: 'Roberto Mendoza — Frontend & Full Stack Engineer',
       description:
         'Ingeniero de software en Santiago de Chile. 6 años construyendo plataformas web, design systems, APIs y productos con IA aplicada.',
+      ogAlt: 'Tarjeta: Menos fricción. Más producto. Roberto Mendoza, Frontend & Full Stack Engineer, rm.byteforus.com',
     },
     nav: { work: 'proyectos', stack: 'stack', log: 'trayectoria', contact: 'contacto', label: 'Navegación principal' },
     ui: { motion: 'motion', motionOn: 'on', motionOff: 'off' },
@@ -164,6 +165,7 @@ export const t: Record<Lang, Dict> = {
       title: 'Roberto Mendoza — Frontend & Full Stack Engineer',
       description:
         'Software engineer based in Santiago, Chile. 6 years building web platforms, design systems, APIs and applied-AI products.',
+      ogAlt: 'Share card: Less friction. More product. Roberto Mendoza, Frontend & Full Stack Engineer, rm.byteforus.com',
     },
     nav: { work: 'work', stack: 'stack', log: 'career', contact: 'contact', label: 'Main navigation' },
     ui: { motion: 'motion', motionOn: 'on', motionOff: 'off' },

@@ -13,6 +13,9 @@ const site = Astro.site ?? new URL('https://example.com');
 const canonical = new URL(Astro.url.pathname, site).href;
 const esUrl = new URL('/', site).href;
 const enUrl = new URL('/en/', site).href;
+const ogImage = new URL(`/og-${lang}.png`, site).href;
+const ogLocale = lang === 'es' ? 'es_CL' : 'en_US';
+const ogLocaleAlt = lang === 'es' ? 'en_US' : 'es_CL';
 
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -41,12 +44,25 @@ const jsonLd = {
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <!-- The hero display type is the LCP element: start its latin subset early. -->
     <link rel="preload" href={displayLatin} as="font" type="font/woff2" crossorigin="anonymous" />
+    <!-- Open Graph / social share card (images rendered by og/render.cjs) -->
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={profile.name} />
     <meta property="og:title" content={d.meta.title} />
     <meta property="og:description" content={d.meta.description} />
     <meta property="og:url" content={canonical} />
-    <meta property="og:locale" content={lang === 'es' ? 'es_CL' : 'en_US'} />
-    <meta name="twitter:card" content="summary" />
+    <meta property="og:locale" content={ogLocale} />
+    <meta property="og:locale:alternate" content={ogLocaleAlt} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:secure_url" content={ogImage} />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={d.meta.ogAlt} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={d.meta.title} />
+    <meta name="twitter:description" content={d.meta.description} />
+    <meta name="twitter:image" content={ogImage} />
+    <meta name="twitter:image:alt" content={d.meta.ogAlt} />
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
     <!-- Apply the stored motion preference before first paint to avoid a flash of animation. -->
     <script is:inline>

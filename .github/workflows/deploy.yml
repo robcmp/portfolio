@@ -5,9 +5,14 @@ on:
     branches: ["main"]
   workflow_dispatch:
 
+permissions:
+  contents: read
+
+# Queue deploys instead of cancelling: the copy step deletes /var/www/portfolio first,
+# so an interrupted run would leave the site empty.
 concurrency:
   group: deploy-portfolio
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   build-and-deploy:
