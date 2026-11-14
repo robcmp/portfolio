@@ -22,6 +22,7 @@ export type Project = {
   summary: string;
   log: string[];
   stack: string[];
+  url: string;
 };
 
 export type Commit = { hash: string; ref: string; period: string; role: string; company: string; msg: string };
@@ -41,7 +42,7 @@ type Dict = {
   };
   terminal: { cmd: string; out: string[] }[];
   metrics: { k: string; v: string }[];
-  work: { eyebrow: string; title: string; note: string; status: string; projects: Project[] };
+  work: { eyebrow: string; title: string; note: string; status: string; open: string; newTab: string; projects: Project[] };
   stack: { eyebrow: string; title: string; groups: { dir: string; items: string[] }[] };
   log: { eyebrow: string; title: string; commits: Commit[]; edu: string[] };
   contact: { eyebrow: string; title: string; sub: string; copy: string; copied: string; available: string };
@@ -49,10 +50,10 @@ type Dict = {
 };
 
 const projectBase = {
-  budget: { slug: 'budget-for-both', title: 'Budget For Both', stack: ['vue-3', 'nestjs', 'prisma', 'postgresql', 'otel'] },
-  wih: { slug: 'what-i-have', title: 'What I Have', stack: ['react-19', 'nestjs-11', 'mcp', 'tailwind-v4', 'docker'] },
-  health: { slug: 'family-health', title: 'Family Health', stack: ['react-19', 'express', 'postgresql', 'tesseract.js', 'otel'] },
-  flow: { slug: 'dailyflow', title: 'DailyFlow', stack: ['nestjs', 'react', 'playwright', 'bullmq', 'redis'] },
+  budget: { slug: 'budget-for-both', title: 'Budget For Both', url: 'https://budget.byteforus.com', stack: ['vue-3', 'nestjs', 'prisma', 'postgresql', 'otel'] },
+  wih: { slug: 'what-i-have', title: 'What I Have', url: 'https://whatihave.byteforus.com', stack: ['react-19', 'nestjs-11', 'mcp', 'tailwind-v4', 'docker'] },
+  health: { slug: 'family-health', title: 'Family Health', url: 'https://familyhealth.byteforus.com', stack: ['react-19', 'express', 'postgresql', 'tesseract.js', 'otel'] },
+  flow: { slug: 'dailyflow', title: 'DailyFlow', url: 'https://dailyflow.byteforus.com', stack: ['nestjs', 'react', 'playwright', 'bullmq', 'redis'] },
 };
 
 const commitsBase = [
@@ -99,6 +100,8 @@ export const t: Record<Lang, Dict> = {
       title: 'Procesos en ejecución',
       note: 'Productos propios, diseñados, construidos y desplegados de punta a punta en mi propio VPS.',
       status: 'en línea',
+      open: 'abrir',
+      newTab: 'se abre en una pestaña nueva',
       projects: [
         {
           ...projectBase.budget,
@@ -194,6 +197,8 @@ export const t: Record<Lang, Dict> = {
       title: 'Running processes',
       note: 'Own products, designed, built and deployed end to end on my own VPS.',
       status: 'online',
+      open: 'open',
+      newTab: 'opens in a new tab',
       projects: [
         {
           ...projectBase.budget,
