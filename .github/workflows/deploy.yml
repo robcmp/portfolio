@@ -1,0 +1,41 @@
+name: Deploy portfolio
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-portfolio
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22" # Astro 7 needs >= 22.22; "22" resolves to the latest 22.x
+          cache: "npm"
+
+      - name: Install & build
+        env:
+          SITE_URL: https://rm.byteforus.com
+        run: |
+          npm ci
+          npm run build
+
+      - name: Copy files to VPS
+        uses: appleboy/scp-action@917f8b81dfc1ccd331fef9e2d61bdc6c8be94634 # v0.1.7
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          source: "dist/*"
+          target: "/var/www/portfolio"
+          strip_components: 1
+          rm: true

@@ -1,0 +1,167 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-void: #070807;
+  --color-panel: #0d0f0d;
+  --color-raised: #131613;
+  --color-fg: #e8ede6;
+  /* Solid tones instead of alpha: alpha greys landed at 2.8:1 on the void bg.
+     dim = 7.5:1, faint = 5.1:1 on #070807 (WCAG AA for small text is 4.5:1). */
+  --color-dim: #98a198;
+  --color-faint: #7d857d;
+  --color-rule: #e8ede61a;
+  --color-neon: #3dff8b;
+  --color-neon-dim: #3dff8b33;
+  --color-glitch: #ff2e88;
+  --color-ok: #27c93f;
+  --color-warn: #ffbd2e;
+  --color-err: #ff5f56;
+  --font-display: 'Big Shoulders Display Variable', 'Arial Narrow', sans-serif;
+  --font-sans: 'Geist Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'Geist Mono Variable', ui-monospace, monospace;
+  --radius-none: 0;
+}
+
+@layer base {
+  html {
+    background: var(--color-void);
+    color: var(--color-fg);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    scroll-behavior: smooth;
+    scroll-padding-top: 4.5rem;
+  }
+  ::selection { background: var(--color-neon); color: var(--color-void); }
+  :focus-visible { outline: 2px solid var(--color-neon); outline-offset: 3px; }
+}
+
+/* Blueprint grid behind everything, fading toward the edges */
+.grid-bg {
+  position: fixed; inset: 0; z-index: -2; pointer-events: none;
+  background-image:
+    linear-gradient(var(--color-rule) 1px, transparent 1px),
+    linear-gradient(90deg, var(--color-rule) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 30%, transparent 100%);
+  opacity: 0.55;
+}
+
+/* CRT: very light scanlines + vignette.
+   No mix-blend-mode: a fixed, full-viewport blended layer forces the browser to
+   re-composite the whole page on every scroll frame. Plain translucent paint
+   looks the same and costs almost nothing. */
+.crt {
+  position: fixed; inset: 0; z-index: 60; pointer-events: none;
+  background:
+    repeating-linear-gradient(to bottom, transparent 0 2px, rgb(0 0 0 / 0.07) 2px 3px),
+    radial-gradient(ellipse at center, transparent 62%, rgb(0 0 0 / 0.4) 100%);
+  opacity: 0.85;
+}
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-neon);
+}
+.eyebrow::before { content: '// '; color: var(--color-faint); }
+
+.display {
+  font-family: var(--font-display);
+  font-weight: 800;
+  text-transform: uppercase;
+  line-height: 0.94;
+  letter-spacing: -0.01em;
+}
+
+.glow { text-shadow: 0 0 18px rgb(61 255 139 / 0.45); }
+
+.cursor-blink::after {
+  /* alt text empty: the blinking caret is decoration, not content */
+  content: '_' / "";
+  color: var(--color-neon);
+  animation: blink 1.05s steps(1) infinite;
+}
+@keyframes blink { 50% { opacity: 0; } }
+
+/* Hairline panels, square corners */
+.panel { border: 1px solid var(--color-rule); background: var(--color-panel); }
+
+/* Bracketed corners on focus targets */
+.brackets { position: relative; }
+.brackets::before, .brackets::after {
+  content: ''; position: absolute; width: 10px; height: 10px; pointer-events: none;
+  border-color: var(--color-neon); opacity: 0; transition: opacity 0.2s, transform 0.3s;
+}
+.brackets::before { top: -1px; left: -1px; border-top: 1px solid; border-left: 1px solid; transform: translate(4px, 4px); }
+.brackets::after { bottom: -1px; right: -1px; border-bottom: 1px solid; border-right: 1px solid; transform: translate(-4px, -4px); }
+.brackets:hover::before, .brackets:hover::after, .brackets:focus-within::before, .brackets:focus-within::after { opacity: 1; transform: none; }
+
+/* Cursor-tracked spotlight on project cards */
+.spot {
+  background:
+    radial-gradient(420px circle at var(--mx, -999px) var(--my, -999px), rgb(61 255 139 / 0.08), transparent 60%),
+    var(--color-panel);
+}
+
+/* RGB-split glitch on hover */
+.glitch { position: relative; display: inline-block; }
+.glitch::before, .glitch::after {
+  /* `/ ""` gives the duplicate an empty alternative text: screen readers read
+     the heading once, not three times. */
+  content: attr(data-text) / ""; position: absolute; inset: 0; opacity: 0; pointer-events: none;
+}
+.glitch::before { color: var(--color-glitch); }
+.glitch::after { color: var(--color-neon); }
+.group:hover .glitch::before, .glitch:hover::before { opacity: 0.85; animation: glitch-a 0.42s steps(2) infinite; }
+.group:hover .glitch::after, .glitch:hover::after { opacity: 0.85; animation: glitch-b 0.42s steps(2) infinite; }
+@keyframes glitch-a {
+  0% { clip-path: inset(10% 0 70% 0); transform: translate(-3px, 0); }
+  50% { clip-path: inset(60% 0 15% 0); transform: translate(3px, 0); }
+  100% { clip-path: inset(35% 0 45% 0); transform: translate(-2px, 0); }
+}
+@keyframes glitch-b {
+  0% { clip-path: inset(65% 0 10% 0); transform: translate(3px, 0); }
+  50% { clip-path: inset(5% 0 80% 0); transform: translate(-3px, 0); }
+  100% { clip-path: inset(40% 0 40% 0); transform: translate(2px, 0); }
+}
+
+/* Ticker */
+.ticker-track { display: flex; width: max-content; animation: ticker 45s linear infinite; }
+.ticker:hover .ticker-track { animation-play-state: paused; }
+@keyframes ticker { to { transform: translateX(-50%); } }
+
+/* Scroll reveal */
+[data-reveal] { opacity: 0; transform: translateY(16px); transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.16, 1, 0.3, 1); }
+[data-reveal].is-in { opacity: 1; transform: none; }
+
+/* Terminal typing: lines hidden until typed (JS adds .typing on the container) */
+.typing [data-line] { display: none; }
+.typing [data-line].shown { display: block; }
+
+.ascii {
+  font-family: var(--font-mono);
+  line-height: 1;
+  white-space: pre;
+  color: var(--color-neon);
+  text-shadow: 0 0 8px rgb(61 255 139 / 0.5);
+  user-select: none;
+}
+
+/* ── user motion switch (header button, persisted, defaults to OS preference) ── */
+.motion-off *,
+.motion-off *::before,
+.motion-off *::after {
+  animation-play-state: paused !important;
+  transition-duration: 0.01ms !important;
+}
+.motion-off .ticker-track { animation: none !important; }
+.motion-off .crt { display: none; }
+.motion-off [data-reveal] { opacity: 1 !important; transform: none !important; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  [data-reveal] { opacity: 1 !important; transform: none !important; }
+}

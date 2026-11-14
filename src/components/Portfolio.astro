@@ -1,0 +1,267 @@
+---
+import { t, profile, ticker, type Lang } from '../i18n/content';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const d = t[lang];
+const home = lang === 'es' ? '/' : '/en/';
+const pad = (n: number) => String(n).padStart(2, '0');
+const year = new Date().getFullYear();
+---
+<a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[80] focus:bg-neon focus:px-4 focus:py-2 focus:font-mono focus:text-void">
+  {lang === 'es' ? 'saltar al contenido' : 'skip to content'}
+</a>
+
+<!-- ───────── top bar ───────── -->
+<header class="fixed inset-x-0 top-0 z-50 border-b border-rule bg-void md:bg-void/80 md:backdrop-blur-md">
+  <div class="mx-auto flex h-14 max-w-[1440px] items-center justify-between gap-3 px-5 font-mono text-xs md:px-8">
+    <a href={home} class="cursor-blink inline-flex min-h-11 items-center text-sm text-fg"><span>{profile.handle}</span><span class="sr-only"> — {profile.name}</span></a>
+    <nav aria-label={d.nav.label} class="hidden items-center gap-7 md:flex">
+      {[['#work', d.nav.work], ['#stack', d.nav.stack], ['#log', d.nav.log], ['#contact', d.nav.contact]].map(([href, label], i) => (
+        <a href={href} class="group flex min-h-11 items-center text-dim transition-colors hover:text-fg">
+          <span class="text-faint group-hover:text-neon">[{pad(i + 1)}]</span> {label}
+        </a>
+      ))}
+    </nav>
+    <div class="flex items-center gap-3 md:gap-5">
+      <span class="hidden items-center gap-2 text-dim lg:flex">
+        <span class="size-1.5 bg-neon shadow-[0_0_8px_#3dff8b]"></span><span data-clock>--:--</span> CLT
+      </span>
+      <button
+        type="button"
+        data-motion-toggle
+        aria-pressed="true"
+        data-label-on={d.ui.motionOn}
+        data-label-off={d.ui.motionOff}
+        class="flex min-h-7 items-center gap-1.5 border border-rule px-2 py-1 text-[10px] uppercase tracking-[0.12em] text-dim transition-colors hover:border-neon hover:text-neon"
+      >
+        <span class="size-1.5 bg-neon" aria-hidden="true" data-motion-dot></span>
+        <span>{d.ui.motion}</span><span data-motion-label>{d.ui.motionOn}</span>
+      </button>
+      <div class="flex border border-rule" role="group" aria-label={lang === 'es' ? 'Idioma' : 'Language'}>
+        <a href="/" hreflang="es" class:list={['flex min-h-7 items-center px-2.5 py-1', lang === 'es' ? 'bg-neon text-void' : 'text-dim hover:text-fg']} aria-current={lang === 'es' ? 'page' : undefined}>ES</a>
+        <a href="/en/" hreflang="en" class:list={['flex min-h-7 items-center px-2.5 py-1', lang === 'en' ? 'bg-neon text-void' : 'text-dim hover:text-fg']} aria-current={lang === 'en' ? 'page' : undefined}>EN</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main id="main" class="mx-auto max-w-[1440px]">
+  <!-- ───────── hero ───────── -->
+  <section class="relative grid min-h-[100svh] grid-cols-1 gap-10 px-5 pb-12 pt-24 md:px-8 lg:grid-cols-12 lg:gap-6">
+    <div class="flex flex-col justify-center lg:col-span-7">
+      <p class="eyebrow mb-8">{d.hero.eyebrow}</p>
+      <!-- Real text stays in the a11y tree; the animated copy is aria-hidden and never scrambled (LCP). -->
+      <h1 class="display text-[clamp(3.4rem,11.5vw,11.5rem)]">
+        <span class="sr-only">{d.hero.lines.filter(Boolean).join(' ')}</span>
+        <span class="block" aria-hidden="true">{d.hero.lines[0]}</span>
+        <span class="block text-neon glow" aria-hidden="true">{d.hero.lines[1]}</span>
+        {d.hero.lines[2] && <span class="block text-faint" aria-hidden="true">{d.hero.lines[2]}</span>}
+      </h1>
+      <p class="mt-8 max-w-xl text-lg leading-relaxed text-dim" data-reveal>{d.hero.sub}</p>
+      <div class="mt-10 flex flex-wrap items-center gap-4 font-mono text-sm" data-reveal>
+        <a href="#work" class="bg-neon px-6 py-3 text-void transition-shadow hover:shadow-[0_0_24px_#3dff8b80]">./{d.hero.ctaWork.replace(' ', '-')} →</a>
+        <a href="#contact" class="border border-rule px-6 py-3 text-fg transition-colors hover:border-neon hover:text-neon">{d.hero.ctaContact}</a>
+        <span class="flex items-center gap-2 text-xs text-dim">
+          <span class="relative flex size-2"><span class="absolute inline-flex size-full animate-ping bg-ok opacity-75"></span><span class="relative inline-flex size-2 bg-ok"></span></span>
+          {d.hero.status}
+        </span>
+      </div>
+    </div>
+
+    <div class="flex flex-col justify-center gap-6 lg:col-span-5">
+      <figure class="panel relative overflow-hidden" aria-hidden="true">
+        <div class="flex items-center justify-between border-b border-rule px-4 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-faint">
+          <span>render.torus</span><span data-fps>-- fps</span>
+        </div>
+        <pre class="ascii grid h-[290px] place-items-center overflow-hidden text-[9px] sm:h-[320px] sm:text-[10px] md:h-[348px] md:text-[11px]" data-torus></pre>
+        <figcaption class="border-t border-rule px-4 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-faint">{d.hero.torusCaption}</figcaption>
+      </figure>
+
+      <div class="panel font-mono text-[13px]" data-terminal>
+        <p class="sr-only">{d.terminal.map((c) => `${c.cmd}. ${c.out.join('. ')}`).join(' ')}</p>
+        <div class="flex items-center gap-2 border-b border-rule px-4 py-2.5">
+          <span class="size-2.5 rounded-full bg-err"></span><span class="size-2.5 rounded-full bg-warn"></span><span class="size-2.5 rounded-full bg-ok"></span>
+          <span class="ml-3 text-[11px] text-faint">~/{profile.handle} — zsh</span>
+        </div>
+        <div class="min-h-[13.5rem] space-y-1 p-4 leading-relaxed" aria-hidden="true">
+          {d.terminal.map((c) => (
+            <>
+              <p data-line data-cmd={c.cmd}><span class="text-neon">❯</span> <span class="text-fg" data-cmd-text>{c.cmd}</span></p>
+              {c.out.map((o) => <p data-line class="text-dim">{o}</p>)}
+            </>
+          ))}
+          <p data-line><span class="text-neon">❯</span> <span class="cursor-blink"></span></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────── metrics strip ───────── -->
+  <dl class="grid grid-cols-2 border-y border-rule font-mono md:grid-cols-4">
+    {d.metrics.map((m, i) => (
+      <div class:list={['px-5 py-6 md:px-8', i > 0 && 'border-l border-rule', i === 2 && 'max-md:border-l-0 max-md:border-t', i === 3 && 'max-md:border-t']} data-reveal>
+        <dt class="text-[10px] uppercase tracking-[0.14em] text-faint">{m.k}</dt>
+        <dd class="mt-2 text-xl text-fg md:text-2xl">{m.v}</dd>
+      </div>
+    ))}
+  </dl>
+
+  <!-- ───────── ticker ───────── -->
+  <div class="ticker overflow-hidden border-b border-rule py-3 font-mono text-xs uppercase tracking-[0.14em] text-faint" aria-hidden="true">
+    <div class="ticker-track">
+      {[0, 1].map(() => (
+        <div class="flex shrink-0">
+          {ticker.map((s) => <span class="px-6"><span class="text-neon">+</span> {s}</span>)}
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <!-- ───────── work ───────── -->
+  <section id="work" aria-labelledby="work-title" class="px-5 py-24 md:px-8 md:py-32">
+    <div class="mb-14 grid gap-6 lg:grid-cols-12">
+      <div class="lg:col-span-8">
+        <p class="eyebrow mb-5"><span data-scramble aria-hidden="true">{d.work.eyebrow}</span><span class="sr-only">{d.work.eyebrow}</span></p>
+        <h2 id="work-title" class="display text-[clamp(3.2rem,8vw,7.5rem)]"><span data-scramble aria-hidden="true">{d.work.title}</span><span class="sr-only">{d.work.title}</span></h2>
+      </div>
+      <p class="max-w-sm self-end text-dim lg:col-span-4 lg:justify-self-end" data-reveal>{d.work.note}</p>
+    </div>
+
+    <ol class="grid gap-px border border-rule bg-rule md:grid-cols-2">
+      {d.work.projects.map((p, i) => (
+        <li class="group spot brackets flex flex-col" data-spot data-reveal>
+          <article class="flex h-full flex-col p-6 md:p-8" aria-labelledby={`p-${p.slug}`}>
+            <div class="mb-10 flex items-center justify-between font-mono text-[11px] text-faint">
+              <span>#{i + 1} <span class="text-dim">~/projects/{p.slug}</span></span>
+              <span class="flex items-center gap-2"><span class="size-1.5 bg-ok shadow-[0_0_6px_#27c93f]"></span>{d.work.status}</span>
+            </div>
+            <p class="mb-3 font-mono text-[11px] uppercase tracking-[0.14em] text-neon">{p.kind}</p>
+            <h3 id={`p-${p.slug}`} class="display mb-5 text-[clamp(2.6rem,5vw,4.25rem)]">
+              <span class="glitch" data-text={p.title}>{p.title}</span>
+            </h3>
+            <p class="mb-6 max-w-md leading-relaxed text-dim">{p.summary}</p>
+            <ul class="mb-8 space-y-1.5 font-mono text-[13px]">
+              {p.log.map((l) => <li><span class="text-neon">›</span> <span class="text-fg/80">{l}</span></li>)}
+            </ul>
+            <ul class="mt-auto flex flex-wrap gap-1.5 border-t border-rule pt-5 font-mono text-[11px] text-dim">
+              {p.stack.map((s) => <li class="border border-rule px-2 py-1 transition-colors group-hover:border-neon-dim">{s}</li>)}
+            </ul>
+          </article>
+        </li>
+      ))}
+    </ol>
+  </section>
+
+  <!-- ───────── stack ───────── -->
+  <section id="stack" aria-labelledby="stack-title" class="border-t border-rule px-5 py-24 md:px-8 md:py-32">
+    <p class="eyebrow mb-5"><span data-scramble aria-hidden="true">{d.stack.eyebrow}</span><span class="sr-only">{d.stack.eyebrow}</span></p>
+    <h2 id="stack-title" class="display mb-14 text-[clamp(3.2rem,8vw,7.5rem)]"><span data-scramble aria-hidden="true">{d.stack.title}</span><span class="sr-only">{d.stack.title}</span></h2>
+    <div class="grid gap-px border border-rule bg-rule sm:grid-cols-2 lg:grid-cols-5">
+      {d.stack.groups.map((g, gi) => (
+        <div class="bg-void p-6 font-mono text-[13px]" data-reveal style={`transition-delay:${gi * 70}ms`}>
+          <p class="mb-4 text-fg"><span class="text-faint">{pad(gi + 1)}</span> <span class="text-neon">{g.dir}/</span></p>
+          <ul class="text-dim">
+            {g.items.map((it, ii) => (
+              <li class="flex gap-2 py-0.5 transition-colors hover:text-fg">
+                <span class="text-faint" aria-hidden="true">{ii === g.items.length - 1 ? '└──' : '├──'}</span>{it}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- ───────── career / git log ───────── -->
+  <section id="log" aria-labelledby="log-title" class="border-t border-rule px-5 py-24 md:px-8 md:py-32">
+    <p class="eyebrow mb-5"><span data-scramble aria-hidden="true">{d.log.eyebrow}</span><span class="sr-only">{d.log.eyebrow}</span></p>
+    <h2 id="log-title" class="mb-14 font-mono text-[clamp(1.8rem,4.5vw,3.5rem)] font-light tracking-tight"><span data-scramble aria-hidden="true">{d.log.title}</span><span class="sr-only">{d.log.title}</span></h2>
+    <ol class="relative font-mono text-[13px]">
+      {d.log.commits.map((c, i) => (
+        <li class="group relative grid gap-2 border-t border-rule py-7 pl-8 md:grid-cols-12 md:gap-6" data-reveal>
+          <span class="absolute left-[5px] top-0 h-full w-px bg-rule" aria-hidden="true"></span>
+          <span class:list={['absolute left-0 top-[34px] size-[11px] border', i === 0 ? 'border-neon bg-neon shadow-[0_0_10px_#3dff8b]' : 'border-faint bg-void group-hover:border-neon']} aria-hidden="true"></span>
+          <div class="md:col-span-3">
+            <p><span class="text-warn">commit {c.hash}</span>{c.ref && <span class="text-dim"> (<span class="text-neon">{c.ref}</span>)</span>}</p>
+            <p class="mt-1 text-faint">{c.period}</p>
+          </div>
+          <div class="md:col-span-3">
+            <h3 class="font-sans text-2xl font-medium tracking-tight text-fg">{c.company}</h3>
+            <p class="text-dim">{c.role}</p>
+          </div>
+          <p class="leading-relaxed text-dim transition-colors group-hover:text-fg md:col-span-6">{c.msg}</p>
+        </li>
+      ))}
+    </ol>
+    <ul class="mt-10 grid gap-2 border-t border-rule pt-8 font-mono text-xs uppercase tracking-[0.1em] text-faint md:grid-cols-3">
+      {d.log.edu.map((e) => <li data-reveal><span class="text-neon">▸</span> {e}</li>)}
+    </ul>
+  </section>
+
+  <!-- ───────── contact ───────── -->
+  <section id="contact" aria-labelledby="contact-title" class="relative overflow-hidden border-t border-rule">
+    <canvas class="pointer-events-none absolute inset-0 size-full opacity-40" data-rain aria-hidden="true"></canvas>
+    <div class="pointer-events-none absolute inset-0 bg-gradient-to-b from-void via-void/70 to-void" aria-hidden="true"></div>
+    <div class="relative grid gap-12 lg:gap-x-16 px-5 py-24 md:px-8 md:py-36 lg:grid-cols-12">
+      <div class="lg:col-span-6">
+        <p class="eyebrow mb-5"><span data-scramble aria-hidden="true">{d.contact.eyebrow}</span><span class="sr-only">{d.contact.eyebrow}</span></p>
+        <h2 id="contact-title" class="display whitespace-nowrap text-[clamp(3.25rem,13vw,5rem)] lg:text-[clamp(4.25rem,7.2vw,8rem)]">
+          <span class="block" data-scramble aria-hidden="true">{d.contact.title}</span>
+          <span class="sr-only">{d.contact.title}</span>
+        </h2>
+        <p class="mt-8 max-w-md text-lg leading-relaxed text-dim" data-reveal>{d.contact.sub}</p>
+      </div>
+      <div class="self-end lg:col-span-6" data-reveal>
+        <div class="panel font-mono text-sm">
+          <div class="flex items-center justify-between border-b border-rule px-4 py-2.5 text-[11px] text-faint">
+            <span>~/{profile.handle}/contact.sh</span>
+            <span class="flex items-center gap-2"><span class="size-1.5 bg-ok"></span>{d.contact.available}</span>
+          </div>
+          <dl class="divide-y divide-rule">
+            <div class="flex flex-wrap items-center justify-between gap-3 px-4 py-4">
+              <dt class="w-20 text-faint">email</dt>
+              <dd class="flex flex-1 items-center justify-between gap-3">
+                <a href={`mailto:${profile.email}`} class="inline-flex min-h-11 items-center break-all text-fg hover:text-neon" data-email>{profile.email}</a>
+                <button type="button" aria-label={`${d.contact.copy}: ${profile.email}`} class="border border-rule px-2.5 py-1.5 text-[11px] text-dim transition-colors hover:border-neon hover:text-neon" data-copy={profile.email} data-copied={d.contact.copied}>{d.contact.copy}</button>
+              </dd>
+            </div>
+            <div class="flex items-center gap-3 px-4 py-4">
+              <dt class="w-20 text-faint">linkedin</dt>
+              <dd><a href={profile.linkedin} target="_blank" rel="noopener noreferrer" class="inline-flex min-h-11 items-center text-fg hover:text-neon">{profile.linkedinLabel} ↗</a></dd>
+            </div>
+            <div class="flex items-center gap-3 px-4 py-4">
+              <dt class="w-20 text-faint">github</dt>
+              <dd><a href={profile.github} target="_blank" rel="noopener noreferrer" class="inline-flex min-h-11 items-center text-fg hover:text-neon">{profile.githubLabel} ↗</a></dd>
+            </div>
+            <div class="flex items-center gap-3 px-4 py-4">
+              <dt class="w-20 text-faint">tz</dt>
+              <dd class="text-dim">America/Santiago · <span data-clock>--:--</span></dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- ───────── status line ───────── -->
+<footer class="border-t border-rule font-mono text-[11px]">
+  <div class="mx-auto flex max-w-[1440px] flex-wrap items-stretch justify-between">
+    <div class="flex items-stretch">
+      <span class="bg-neon px-3 py-2 font-medium text-void">NORMAL</span>
+      <span class="border-r border-rule px-3 py-2 text-dim">© {year} {profile.name}</span>
+      <span class="hidden px-3 py-2 text-faint sm:block">{d.footer.built}</span>
+    </div>
+    <div class="flex items-stretch text-faint">
+      <span class="hidden border-l border-rule px-3 py-2 sm:block">utf-8</span>
+      <span class="border-l border-rule px-3 py-2">{lang}</span>
+      <a href="#main" class="border-l border-rule px-3 py-2 text-dim hover:text-neon">{d.footer.top} ↑</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  import { initMotion } from '../scripts/motion';
+  initMotion();
+</script>

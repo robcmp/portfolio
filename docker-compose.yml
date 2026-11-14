@@ -1,0 +1,11 @@
+services:
+  portfolio:
+    build:
+      context: .
+      args:
+        SITE_URL: ${SITE_URL:-https://example.com}
+    image: roberto-portfolio:latest
+    container_name: roberto-portfolio
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${PORTFOLIO_PORT:-8090}:8080"
