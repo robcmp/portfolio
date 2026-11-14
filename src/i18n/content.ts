@@ -70,7 +70,7 @@ export const t: Record<Lang, Dict> = {
     meta: {
       title: 'Roberto Mendoza — Frontend & Full Stack Engineer',
       description:
-        'Ingeniero de software en Santiago de Chile. 6 años construyendo plataformas web, design systems, APIs y productos con IA aplicada.',
+        'Ingeniero de software en Santiago de Chile. 6 años construyendo plataformas web, design systems y APIs, con IA aplicada al desarrollo.',
       ogAlt: 'Tarjeta: Menos fricción. Más producto. Roberto Mendoza, Frontend & Full Stack Engineer, rm.byteforus.com',
     },
     nav: { work: 'proyectos', stack: 'stack', log: 'trayectoria', contact: 'contacto', label: 'Navegación principal' },
@@ -167,7 +167,7 @@ export const t: Record<Lang, Dict> = {
     meta: {
       title: 'Roberto Mendoza — Frontend & Full Stack Engineer',
       description:
-        'Software engineer based in Santiago, Chile. 6 years building web platforms, design systems, APIs and applied-AI products.',
+        'Software engineer based in Santiago, Chile. 6 years building web platforms, design systems and APIs, with AI applied to development.',
       ogAlt: 'Share card: Less friction. More product. Roberto Mendoza, Frontend & Full Stack Engineer, rm.byteforus.com',
     },
     nav: { work: 'work', stack: 'stack', log: 'career', contact: 'contact', label: 'Main navigation' },
