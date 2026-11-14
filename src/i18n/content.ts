@@ -22,7 +22,8 @@ export type Project = {
   summary: string;
   log: string[];
   stack: string[];
-  url: string;
+  /** Live app URL; omit for private/personal projects. */
+  url?: string;
 };
 
 export type Commit = { hash: string; ref: string; period: string; role: string; company: string; msg: string };
@@ -42,7 +43,7 @@ type Dict = {
   };
   terminal: { cmd: string; out: string[] }[];
   metrics: { k: string; v: string }[];
-  work: { eyebrow: string; title: string; note: string; status: string; open: string; newTab: string; projects: Project[] };
+  work: { eyebrow: string; title: string; note: string; status: string; open: string; newTab: string; private: string; projects: Project[] };
   stack: { eyebrow: string; title: string; groups: { dir: string; items: string[] }[] };
   log: { eyebrow: string; title: string; commits: Commit[]; edu: string[] };
   contact: { eyebrow: string; title: string; sub: string; copy: string; copied: string; available: string };
@@ -53,7 +54,7 @@ const projectBase = {
   budget: { slug: 'budget-for-both', title: 'Budget For Both', url: 'https://budget.byteforus.com', stack: ['vue-3', 'nestjs', 'prisma', 'postgresql', 'otel'] },
   wih: { slug: 'what-i-have', title: 'What I Have', url: 'https://whatihave.byteforus.com', stack: ['react-19', 'nestjs-11', 'mcp', 'tailwind-v4', 'docker'] },
   health: { slug: 'family-health', title: 'Family Health', url: 'https://familyhealth.byteforus.com', stack: ['react-19', 'express', 'postgresql', 'tesseract.js', 'otel'] },
-  flow: { slug: 'dailyflow', title: 'DailyFlow', url: 'https://dailyflow.byteforus.com', stack: ['nestjs', 'react', 'playwright', 'bullmq', 'redis'] },
+  flow: { slug: 'dailyflow', title: 'DailyFlow', stack: ['nestjs', 'react', 'playwright', 'bullmq', 'redis'] },
 };
 
 const commitsBase = [
@@ -102,6 +103,7 @@ export const t: Record<Lang, Dict> = {
       status: 'en línea',
       open: 'abrir',
       newTab: 'se abre en una pestaña nueva',
+      private: 'privado · uso personal',
       projects: [
         {
           ...projectBase.budget,
@@ -199,6 +201,7 @@ export const t: Record<Lang, Dict> = {
       status: 'online',
       open: 'open',
       newTab: 'opens in a new tab',
+      private: 'private · personal use',
       projects: [
         {
           ...projectBase.budget,
