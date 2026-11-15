@@ -3,7 +3,7 @@ export type Lang = 'es' | 'en';
 export const profile = {
   name: 'Roberto Mendoza',
   handle: 'rmendoza',
-  email: 'roberto.cmp16@gmail.com',
+  email: 'robcmpdev@gmail.com',
   linkedin: 'https://www.linkedin.com/in/rc-mendoza',
   linkedinLabel: 'in/rc-mendoza',
   github: 'https://github.com/robcmp',
