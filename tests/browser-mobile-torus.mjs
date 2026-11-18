@@ -18,12 +18,15 @@ try {
       for (const element of [figure, figure.locator('[data-fps]'), figure.locator('[data-torus]'), figure.locator('figcaption')]) {
         assert.equal(await element.isVisible(), visible, `${locale} torus panel at ${width}px`);
       }
+      const motionToggle = page.locator('[data-motion-toggle]');
+      assert.equal(await motionToggle.count(), 1, `${locale} motion toggle exists at ${width}px`);
+      assert.equal(await motionToggle.isVisible(), visible, `${locale} motion toggle at ${width}px`);
       assert.equal(await page.locator('h1').isVisible(), true, `${locale} hero remains visible at ${width}px`);
       assert.equal(await page.locator('[data-terminal]').isVisible(), true, `${locale} terminal remains visible at ${width}px`);
     }
   }
   assert.deepEqual(errors, []);
-  console.log('PASS: torus header, drawing and caption hidden at 375/767px and visible at 768/1280px in ES and EN; hero and terminal remain visible; no page errors.');
+  console.log('PASS: torus panel and motion toggle hidden at 375/767px and visible at 768/1280px in ES and EN; hero and terminal remain visible; no page errors.');
 } finally {
   await browser.close();
 }

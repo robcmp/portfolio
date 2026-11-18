@@ -33,7 +33,7 @@ const year = new Date().getFullYear();
         aria-pressed="true"
         data-label-on={d.ui.motionOn}
         data-label-off={d.ui.motionOff}
-        class="flex min-h-7 items-center gap-1.5 border border-rule px-2 py-1 text-[10px] uppercase tracking-[0.12em] text-dim transition-colors hover:border-neon hover:text-neon"
+        class="hidden min-h-7 items-center gap-1.5 border border-rule px-2 py-1 text-[10px] uppercase tracking-[0.12em] text-dim transition-colors hover:border-neon hover:text-neon md:flex"
       >
         <span class="size-1.5 bg-neon" aria-hidden="true" data-motion-dot></span>
         <span>{d.ui.motion}</span><span data-motion-label>{d.ui.motionOn}</span>
